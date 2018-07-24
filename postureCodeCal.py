@@ -1,5 +1,5 @@
 """
-PostureCal.py
+postureCodeCal.py
 Read the estimated join positions from CNN
 Caculate the body angles based on the estimated join positions
 Output a csv file contains the posture codes that correspond to the body angles
