@@ -1,2 +1,2 @@
 # Research-tools
-Tools for models evalution/preprocessing data
+Tools for Machine learning models/algorithm evalution or preprocessing training data
