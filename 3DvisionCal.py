@@ -1,5 +1,9 @@
 """
+3D Angles calculation
+Reading Parameters from the xls files
+Select data points from the xls files
 Calculate the 3D angles
+wumengxi@umich.edu
 """
 import os, csv
 import numpy as np
