@@ -1,5 +1,5 @@
 """
-   DataSummary.py
+   postureStats.py
    Evaluate estimation results from CNN
    Output confusion matrix and accuracy score
    wumengxi@umich.edu
