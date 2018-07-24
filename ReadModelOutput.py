@@ -1,5 +1,5 @@
 """
-Read CNN results from txt files
+Read CNN results (txt files)
 wumengxi@umich.edu
 """
 import os
