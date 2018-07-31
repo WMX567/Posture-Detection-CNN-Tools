@@ -7,7 +7,6 @@ from urllib.request import urlretrieve
 from matplotlib import patches
 import matplotlib.pyplot as plt
 import matplotlib.image as img 
-from os import system
 from PIL import Image
 
 reader = codecs.getreader("utf-8")
