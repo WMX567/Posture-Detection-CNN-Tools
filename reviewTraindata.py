@@ -66,7 +66,7 @@ def inspect(filename):
                 result.append(['', 'not proper label',''])
             image_index = image_index + 1
     
-        with open(output_path + filename + '+reviewed.csv', 'w') as output:
+        with open(output_path + filename + '+inspected.csv', 'w') as output:
             writer = csv.writer(output, lineterminator='\n')
             writer.writerows(result)
 
