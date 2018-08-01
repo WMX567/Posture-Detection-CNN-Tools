@@ -24,9 +24,7 @@ def inspect(filename):
             data = json.loads(row['Answer.annotation_data'])
             print('URL:',url)
             urlretrieve(url, 'pic.jpg')
-            print('Error1')
             pic = img.imread('pic.jpg')
-            print('Error2')
             image_width = Image.open('pic.jpg').size[0]
             image_height = Image.open('pic.jpg').size[1]
             fig, ax = plt.subplots()
