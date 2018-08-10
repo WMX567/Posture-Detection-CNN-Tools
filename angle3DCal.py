@@ -42,28 +42,28 @@ def proccess_3D_angles(x, y, z, is_truth):
     if is_truth == True:
         index_sensor_left = [[0, 3, 9, 12], [8, 7], [4, 3], [5, 4], [1, 0], [2, 1]]
         bool_values = calculation_validation(x, y, z, index_check_lists)
-        vec_back, vec_head, vec_left_arm, vec_left_elbow, vec_left_leg, vec_left_knee = calculate_vector_sensor_left(x, y, z, bool_values)
+        vec_back, vec_head, vec_arm, vec_elbow, vec_leg, vec_knee = calculate_vector_sensor_left(x, y, z, bool_values)
     else:
         index_cnn_left = [[2, 3, 12, 13], [8, 9], [14, 13], [15, 14], [4, 3], [5, 4]]
         bool_values = calculation_validation(x, y, z, index_check_lists)
-        vec_back, vec_head, vec_left_arm, vec_left_elbow, vec_left_leg, vec_left_knee = calculate_vector_cnn_left(x, y, z, bool_values)
+        vec_back, vec_head, vec_arm, vec_elbow, vec_leg, vec_knee = calculate_vector_cnn_left(x, y, z, bool_values)
     vertical_up = [0, -1, 0]
     elbow, knee, neg_vec_back, shoulder, back, neck = ([] for i in range(6))
-    if vec_left_arm and vec_left_elbow:
-        elbow = calculate_angle(vec_left_arm, vec_left_elbow)
+    if vec_arm and vec_elbow:
+        elbow = calculate_angle(vec_arm, vec_elbow)
     if vec_back:
         if is_truth == True:
             vertical_up = [-1, 0, 0]
         back = calculate_angle(vertical_up, vec_back)
-    if vec_left_leg and vec_left_knee:
-        knee = calculate_angle(vec_left_knee, vec_left_leg)
-    if vec_back and vec_left_arm:
+    if vec_leg and vec_knee:
+        knee = calculate_angle(vec_knee, vec_leg)
+    if vec_back and vec_arm:
         neg_vec_back = [v * (-1) for v in vec_back]
-        shoulder = calculate_angle(neg_vec_back, vec_left_arm)
+        shoulder = calculate_angle(neg_vec_back, vec_arm)
     if vec_back and vec_head:
         neck = calculate_angle(vec_head, vec_back)
     angles_3D = [elbow, shoulder, back, knee, neck]
-    vectors = [vec_left_arm, vec_left_elbow, vec_back, vec_left_leg, vec_left_knee, vec_head]
+    vectors = [vec_arm, vec_elbow, vec_back, vec_leg, vec_knee, vec_head]
     if is_truth == True:
         angles_3D = [angle if angle else -4111 for angle in angles_3D]
     print(angles_3D)
