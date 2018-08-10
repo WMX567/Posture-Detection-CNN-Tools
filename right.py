@@ -2,7 +2,6 @@
 Vectors for right side body
 wumengxi@umich.edu
 """
-
 def calculate_vector_cnn_right(x, y, z, bool_values):
     vec_back, vec_head, vec_arm, vec_elbow, vec_leg, vec_knee = ([] for i in range(6))
     if bool_values[0]:
