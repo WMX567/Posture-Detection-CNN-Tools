@@ -5,7 +5,6 @@ Angles tracked by sensor
 return elbow, shoulder, back, knee, neck angles
 wumengxi@umich.edu
 """
-
 import numpy as np
 import matplotlib.pyplot as plt
 from left import calculate_vector_cnn_left, calculate_vector_sensor_left
