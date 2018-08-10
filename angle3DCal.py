@@ -5,10 +5,19 @@ Angles tracked by sensor
 return elbow, shoulder, back, knee, neck angles
 wumengxi@umich.edu
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 from left import calculate_vector_cnn_left, calculate_vector_sensor_left
 from right import calculate_vector_cnn_right, calculate_vector_sensor_right
+from sensor17marker import calculate_vector_sensor_left_17, calculate_vector_sensor_right_17
+
+index_cnn_left = [[2, 3, 12, 13], [8, 9], [14, 13], [15, 14], [4, 3], [5, 4]]
+index_sensor_left = [[0, 3, 9, 12], [8, 7], [4, 3], [5, 4], [1, 0], [2, 1]]
+index_cnn_right = [[3, 2, 12, 13], [8, 9], [11, 12], [10, 11], [1, 2], [0, 1]]
+index_sensor_right = [[0, 3, 9, 12], [7, 8], [9, 10], [10, 11], [12, 13], [13, 14]]
+index_sensor_left_17 = [[0, 3, 10, 14], [8, 9], [4, 3], [5, 4], [1, 0], [2, 1]]
+index_sensor_right_17 = [[0, 3, 10, 14], [8, 9], [10, 11], [11, 12], [14, 15], [15, 16]]
 
 def calculate_angle(v1, v2):
     cross_product = np.cross(v1, v2)
@@ -32,11 +41,11 @@ def calculation_validation(x, y, z, index_check_lists):
 def proccess_3D_angles(x, y, z, is_truth):
     angles_3D, index_check_lists = ([] for i in range(2))
     if is_truth == True:
-        index_check_lists = [[0, 3, 9, 12], [8, 7], [4, 3], [5, 4], [1, 0], [2, 1]]
+        index_cnn_left = [[0, 3, 9, 12], [8, 7], [4, 3], [5, 4], [1, 0], [2, 1]]
         bool_values = calculation_validation(x, y, z, index_check_lists)
         vec_back, vec_head, vec_left_arm, vec_left_elbow, vec_left_leg, vec_left_knee = calculate_vector_sensor_left(x, y, z, bool_values)
     else:
-        index_check_lists = [[2, 3, 12, 13], [8, 9], [14, 13], [15, 14], [4, 3], [5, 4]]
+        index_sensor_left = [[2, 3, 12, 13], [8, 9], [14, 13], [15, 14], [4, 3], [5, 4]]
         bool_values = calculation_validation(x, y, z, index_check_lists)
         vec_back, vec_head, vec_left_arm, vec_left_elbow, vec_left_leg, vec_left_knee = calculate_vector_cnn_left(x, y, z, bool_values)
     vertical_up = [0, -1, 0]
