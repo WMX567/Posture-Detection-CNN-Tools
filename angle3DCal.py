@@ -41,11 +41,11 @@ def calculation_validation(x, y, z, index_check_lists):
 def proccess_3D_angles(x, y, z, is_truth):
     angles_3D, index_check_lists = ([] for i in range(2))
     if is_truth == True:
-        index_cnn_left = [[0, 3, 9, 12], [8, 7], [4, 3], [5, 4], [1, 0], [2, 1]]
+        index_sensor_left = [[0, 3, 9, 12], [8, 7], [4, 3], [5, 4], [1, 0], [2, 1]]
         bool_values = calculation_validation(x, y, z, index_check_lists)
         vec_back, vec_head, vec_left_arm, vec_left_elbow, vec_left_leg, vec_left_knee = calculate_vector_sensor_left(x, y, z, bool_values)
     else:
-        index_sensor_left = [[2, 3, 12, 13], [8, 9], [14, 13], [15, 14], [4, 3], [5, 4]]
+        index_cnn_left = [[2, 3, 12, 13], [8, 9], [14, 13], [15, 14], [4, 3], [5, 4]]
         bool_values = calculation_validation(x, y, z, index_check_lists)
         vec_back, vec_head, vec_left_arm, vec_left_elbow, vec_left_leg, vec_left_knee = calculate_vector_cnn_left(x, y, z, bool_values)
     vertical_up = [0, -1, 0]
