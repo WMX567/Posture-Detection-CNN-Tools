@@ -1,5 +1,5 @@
 """
-Vectors for left-side body
+Vectors for left side body
 wumengxi@umich.edu
 """
 
