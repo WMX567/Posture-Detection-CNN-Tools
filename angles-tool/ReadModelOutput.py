@@ -1,5 +1,5 @@
 """
-Read CNN results (txt files)
+Read CNN results from txt files
 wumengxi@umich.edu
 """
 import os
@@ -11,7 +11,8 @@ def read_model_output(input_file):
     lines.pop(0)
     for line in lines:
         line = line.split()
-        video_frames.append(line[0])
+        image_name = line[0]
+        video_frames.append([int(image_name[3:-4])])
         line.pop(0)
         values = [float(s) for s in line if s != '']
         row_X, row_Y = ([] for i in range(2))
@@ -23,3 +24,5 @@ def read_model_output(input_file):
         X.append(row_X)
         Y.append(row_Y)
     return X, Y, video_frames
+
+
