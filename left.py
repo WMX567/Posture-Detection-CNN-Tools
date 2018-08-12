@@ -32,6 +32,6 @@ def calculate_vector_sensor_left(x, y, z, bool_values):
     if bool_values[4]:
         vec_leg = [x[1]-x[0], y[1]-y[0], z[1]-z[0]]
     if bool_values[5]:
-        vec_left_knee = [x[2]-x[1], y[2]-y[1], z[2]-z[1]]
+        vec_knee = [x[2]-x[1], y[2]-y[1], z[2]-z[1]]
     return vec_back, vec_head, vec_arm, vec_elbow, vec_leg, vec_knee
 
