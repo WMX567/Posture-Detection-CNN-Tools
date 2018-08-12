@@ -7,7 +7,7 @@ wumengxi@umich.edu
 """
 import os, csv
 import numpy as np
-from ReadModelOuput import read_model_output
+from ReadModelOutput import read_model_output
 from Angle_3D_Cal import proccess_3D_angles
 
 param_path = '/Users/wumengxi/Desktop/Sync_Diag_Parameters_Summary.csv'
@@ -15,7 +15,7 @@ sensor_data_path = '/Users/wumengxi/Desktop/Raw_Data_Sensor/'
 output_path = '/Users/wumengxi/Desktop/3D_Angles/'
 input_path = '/Users/wumengxi/Desktop/Final_Left_NoTape/'
 sensor_files = ['toyota_new_2017_05_22_145025_001_3d.csv']
-files = ['FinalSkeleton_15_Left_NoTape_0220_S4.txt'] #, 'FinalSkeleton_22_Left_NoTape_0235_S2_2.txt', 'FinalSkeleton_22_Left_NoTape_0235_S2_3.txt']
+files = ['FinalSkeleton_15_Left_NoTape_0220_S4.txt']
 filenum = '220'
 
 index_ref = []
