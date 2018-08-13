@@ -1,126 +1,91 @@
 """
-postureCodeCal.py
-Read the estimated join positions from CNN
-Caculate the body angles based on the estimated join positions
-Output a csv file contains the posture codes that correspond to the body angles
-wumengxi@umich.edu
+   postureStats.py
+   Evaluate estimation results from CNN
+   Output confusion matrix and accuracy score
+   wumengxi@umich.edu
 """
-import os,csv
+import os,sys,csv
+import pandas as pd
 import numpy as np
-from ReadModelOutput import read_model_output, modify_filename
+from pycm import ConfusionMatrix
+from ReadModelOutput import modify_filename
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-input_path = dir_path + '/FinalSkeleton/'
-output_path = dir_path + '/PostureCodes/'
-angles = []
+vision_path = os.path.join(dir_path, 'PostureCodes')
+truth_path = os.path.join(dir_path, 'Ground_Truth')
+output_path = os.path.join(dir_path, 'Confusion_Matrix')
+param_path = os.path.join(dir_path, 'truth_correspond.csv')
 
-def calculate_angle(v1, v2):
-    cross_product = np.cross(v1, v2)
-    dot_product = np.dot(v1, v2)
-    angle = np.arctan2(np.linalg.norm(cross_product), dot_product)
-    return angle/2/np.pi*360
+upper_limbs_truth, upper_limbs_vision, back_truth, back_vision = ([] for i in range(4))
+leg_truth, leg_vision, neck_truth, neck_vision = ([] for i in range(4))
 
-def upper_limb_estimate(shoulder_angle, elbow_angle):
-    upper_limb_code = 10
-    if shoulder_angle < 15:
-        if elbow_angle < 45:
-            upper_limb_code = 0
-        else:
-            upper_limb_code = 1
-    elif shoulder_angle >= 15 and shoulder_angle < 45:
-        if elbow_angle < 45:
-            upper_limb_code = 3
-        else:
-            upper_limb_code = 2
-    elif shoulder_angle >= 45 and shoulder_angle < 75:
-        if elbow_angle < 45:
-            upper_limb_code = 5
-        else:
-            upper_limb_code = 4
-    elif shoulder_angle >= 75 and shoulder_angle < 100:
-        if elbow_angle < 45:
-            upper_limb_code = 7
-        else:
-            upper_limb_code = 6
-    elif shoulder_angle >= 100 and shoulder_angle < 140:
-        upper_limb_code = 8
-    elif shoulder_angle >= 140 and shoulder_angle < 180:
-        upper_limb_code = 9
-    return upper_limb_code
+def mapping(vision_filename):
+    video_ID = ''
+    subject_ID = int(vision_filename[0:2])
+    video_cut = vision_filename[-1]
+    print('video:', video_cut)
+    if len(vision_filename) > 10:
+        video_cut = vision_filename[-3:]
+    with open(param_path, encoding='utf-8', errors='replace') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['Subject ID'] != '':
+                if int(row['Subject ID']) == subject_ID:
+                    video_ID = row['Video ID']
+                    break
+    pad_zero = '0'
+    if len(video_ID) < 3:
+        pad_zero = '00'
+    truth_filename = vision_filename[0:2] + '_' + pad_zero + video_ID + '_' + 'S' + video_cut
+    return truth_filename
 
-def back_estimate(back_angle):
-    back_code = 0
-    if back_angle < 10:
-        back_code = 1
-    elif back_angle >= 10 and back_angle < 30:
-        back_code = 4
-    elif back_angle >= 30 and back_angle < 65:
-        back_code = 7
-    elif back_angle >= 65 and back_angle < 180:
-        back_code = 9
-    return back_code
-
-def knee_estimate(knee_angle):
-    knee_code = -1
-    if knee_angle < 45:
-        knee_code = 0
-    else:
-        knee_code = 8
-    return knee_code
-
-def neck_estimate(neck_angle):
-    neck_code = -1
-    if neck_angle < 20:
-        neck_code = 0
-    elif neck_angle >= 20:
-        neck_code = 1
-    return neck_code
-
-def proccess_one_image_2D_angle(x, y):
-    posture_codes = []
-    #Calculate the vectors
-    vec_back = [(x[12]+x[13]-x[3]-x[2])/2, (y[12]+y[13]-y[3]-y[2])/2, 0]
-    vec_head = [x[9]-x[8], y[9]-y[8], 0]
-    vec_left_arm = [x[14]-x[13], y[14]-y[13], 0]
-    vec_left_elbow = [x[15]-x[14], y[15]-y[14], 0]
-    vec_left_leg = [x[4]-x[3], y[4]-y[3], 0]
-    vec_left_knee = [x[5]-x[4], y[5]-y[4], 0]
-    vertical_up = [0, -1, 0]
-    #Calculate the angles
-    elbow_angle = calculate_angle(vec_left_arm, vec_left_elbow)
-    knee_angle = calculate_angle(vec_left_leg, vec_left_knee)
-    neg_vec_back = [v * (-1) for v in vec_back]
-    shoulder_angle = calculate_angle(neg_vec_back, vec_left_arm)
-    back_angle = calculate_angle(vertical_up, vec_back)
-    neck_angle = calculate_angle(vec_back, vec_head)
-    #Estimate the posture_codes
-    angles.append([elbow_angle, shoulder_angle, back_angle, knee_angle, neck_angle])
-    posture_codes.append(upper_limb_estimate(shoulder_angle, elbow_angle))
-    posture_codes.append(back_estimate(back_angle))
-    posture_codes.append(knee_estimate(knee_angle))
-    posture_codes.append(neck_estimate(neck_angle))
-    return posture_codes
+def count_postureCode(vision_filename):
+    truth_filename = mapping(vision_filename)
+    read_truth = pd.read_csv(os.path.join(truth_path, truth_filename + '.csv'), encoding = 'utf8').dropna(how='all')
+    read_vision = pd.read_csv(os.path.join(vision_path, vision_filename + '.csv'), encoding = 'utf8').dropna(how='all')
+    truth = read_truth.values.tolist()
+    vision = read_vision.values.tolist()
+    return truth, vision
 
 if __name__ == "__main__":
-    files = os.listdir(input_path)
-    for filename in files:
-        print(filename)
-        if filename == '.DS_Store' or filename == '.DS_Store.csv':
-            continue
-        vision_result, vision_sampled = ([] for i in range(2))
-        input_file = input_path + filename
-        X, Y, video_frames = read_model_output(input_file)
-        for x_values, y_values in zip(X, Y):
-            posture_codes = proccess_one_image_2D_angle(x_values, y_values)
-            vision_result.append(posture_codes)
-        read_length = int(len(vision_result)/6)
-        for i in range(read_length):
-            print('Frame:', i*6)
-            print('Sample:', vision_result[i*6])
-            vision_sampled.append(vision_result[i*6])
-        modified = modify_filename(filename)
-        print('filename:', modified)
-        with open(output_path + modified + '.csv', 'w') as output:
-            writer = csv.writer(output, lineterminator='\n')
-            writer.writerows(vision_result)
-
+    vision_files = os.listdir(vision_path)
+    for filename in vision_files:
+        if filename != '.DS_Store' and filename != '.DS_Store.csv':
+            #打散Video的名称
+            #每一个新的Video都有一个新的Directory
+            #根据S2或者S4分类
+            upper_limbs_truth, upper_limbs_vision, back_truth, back_vision = ([] for i in range(4))
+            leg_truth, leg_vision, neck_truth, neck_vision = ([] for i in range(4))
+            print('File used: ', filename)
+            vision_filename = modify_filename(filename)
+            vision_filename = vision_filename.replace('.csv', '')
+            #打散Video的名称
+            video_ID = vision_filename[3:7]
+            print('Video ID:', video_ID)
+            video_path = os.path.join(output_path, video_ID)
+            if not os.path.exists(video_path):
+                os.makedirs(video_path)
+            truth, vision = count_postureCode(vision_filename)
+            upper_limbs_truth.extend(list(map(int, truth[0])))
+            back_truth.extend(list(map(int, truth[1])))
+            leg_truth.extend(list(map(int, truth[2])))
+            neck_truth.extend(list(map(int, truth[3])))
+            upper_limbs_vision.extend(vision[0])
+            back_vision.extend(vision[1])
+            leg_vision.extend(vision[2])
+            neck_vision.extend(vision[3])
+            truth = [upper_limbs_truth, back_truth, leg_truth, neck_truth]
+            vision = [upper_limbs_vision, back_vision, leg_vision, neck_vision]
+            #新建一个Directory
+            new_path = os.path.join(video_path, vision_filename + '_CM')
+            if not os.path.exists(new_path):
+                os.makedirs(new_path)
+            options = ['Upper Limb','Back','Knee','Neck']
+            for i in range(len(truth)):
+                print_stdout = sys.stdout
+                out_file = open(os.path.join(new_path, options[i] + '_CM.txt'), 'w')
+                sys.stdout = out_file
+                con_matrix = ConfusionMatrix(truth[i], vision[i])
+                print(con_matrix)
+                sys.stdout = print_stdout
+                out_file.close()
