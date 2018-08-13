@@ -10,8 +10,8 @@ import numpy as np
 from ReadModelOutput import read_model_output, modify_filename
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-input_path = dir_path + '/FinalSkeleton/'
-output_path = dir_path + '/PostureCodes/'
+input_path = os.path.join(dir_path, 'FinalSkeleton')
+output_path = os.path.join(dir_path, 'PostureCodes')
 angles = []
 
 def calculate_angle(v1, v2):
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         if filename == '.DS_Store' or filename == '.DS_Store.csv':
             continue
         vision_result, vision_sampled = ([] for i in range(2))
-        input_file = input_path + filename
+        input_file = os.path.join(input_path, filename)
         X, Y, video_frames = read_model_output(input_file)
         for x_values, y_values in zip(X, Y):
             posture_codes = proccess_one_image_2D_angle(x_values, y_values)
@@ -120,7 +120,7 @@ if __name__ == "__main__":
             vision_sampled.append(vision_result[i*6])
         modified = modify_filename(filename)
         print('filename:', modified)
-        with open(output_path + modified + '.csv', 'w') as output:
+        with open(os.path.join(output_path, modified+'.csv'), 'w') as output:
             writer = csv.writer(output, lineterminator='\n')
             writer.writerows(vision_result)
 
