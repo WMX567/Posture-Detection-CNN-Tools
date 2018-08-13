@@ -16,9 +16,6 @@ truth_path = os.path.join(dir_path, 'Ground_Truth')
 output_path = os.path.join(dir_path, 'Confusion_Matrix')
 param_path = os.path.join(dir_path, 'truth_correspond.csv')
 
-upper_limbs_truth, upper_limbs_vision, back_truth, back_vision = ([] for i in range(4))
-leg_truth, leg_vision, neck_truth, neck_vision = ([] for i in range(4))
-
 def mapping(vision_filename):
     video_ID = ''
     subject_ID = int(vision_filename[0:2])
