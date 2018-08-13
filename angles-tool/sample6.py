@@ -2,10 +2,6 @@
 Sample the posture codes to match the groud truth file
 wumengxi@umich.edu
 """
-"""
-Sample the posture codes to match the groud truth file
-wumengxi@umich.edu
-"""
 import os,csv
 import pandas as pd
 
