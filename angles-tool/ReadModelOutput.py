@@ -26,3 +26,12 @@ def read_model_output(input_file):
     return X, Y, video_frames
 
 
+def modify_filename(input_file):
+    input_file = input_file.replace('FinalSkeleton_', '', 1)
+    input_file = input_file.replace('Diag_', '', 1)
+    input_file = input_file.replace('Right_', '', 1)
+    input_file = input_file.replace('Left_', '', 1)
+    input_file = input_file.replace('NoTape_','', 1)
+    input_file = input_file.replace('.txt','', 1)
+    return input_file
+
