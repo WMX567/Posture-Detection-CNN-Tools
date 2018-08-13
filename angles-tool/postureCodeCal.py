@@ -7,10 +7,11 @@ wumengxi@umich.edu
 """
 import os,csv
 import numpy as np
-from ReadModelOuput import read_model_output
+from ReadModelOutput import read_model_output, modify_filename
 
-path = '/Users/wumengxi/Desktop/Final_Diag_Test/'
-output_path = '/Users/wumengxi/Desktop/'
+dir_path = os.path.dirname(os.path.realpath(__file__))
+input_path = dir_path + '/FinalSkeleton/'
+output_path = dir_path + '/PostureCodes/'
 angles = []
 
 def calculate_angle(v1, v2):
@@ -101,32 +102,25 @@ def proccess_one_image_2D_angle(x, y):
     return posture_codes
 
 if __name__ == "__main__":
-    files = os.listdir(path)
+    files = os.listdir(input_path)
     for filename in files:
+        print(filename)
+        if filename == '.DS_Store' or filename == '.DS_Store.csv':
+            continue
         vision_result, vision_sampled = ([] for i in range(2))
-        input_file = path + filename
+        input_file = input_path + filename
         X, Y, video_frames = read_model_output(input_file)
         for x_values, y_values in zip(X, Y):
             posture_codes = proccess_one_image_2D_angle(x_values, y_values)
             vision_result.append(posture_codes)
-        """read_length = int(len(vision_result)/6)
+        read_length = int(len(vision_result)/6)
         for i in range(read_length):
             print('Frame:', i*6)
             print('Sample:', vision_result[i*6])
             vision_sampled.append(vision_result[i*6])
-        print('filename:', filename)"""
-        with open(output_path + filename + '.csv', 'w') as output:
+        modified = modify_filename(filename)
+        print('filename:', modified)
+        with open(output_path + modified + '.csv', 'w') as output:
             writer = csv.writer(output, lineterminator='\n')
             writer.writerows(vision_result)
-
-angles_sampled = []
-frames = []
-for i in range(0, len(angles), 6):
-    angles_sampled.append(angles[i])
-    frames.append(i)
-
-for angle, frame in zip(angles_sampled, frames):
-    print('Frame:', frame)
-    print('Angle:', angle)
-
 
