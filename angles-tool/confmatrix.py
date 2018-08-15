@@ -23,41 +23,53 @@ def re_value(a, b):
 		b = 1
 	return a, b
 
-def print_confusion_matrix(matrix, labels, tpr):
+def print_confusion_matrix(matrix, labels, tpr, accuracy):
 	matrix = np.concatenate((np.array(labels)[:, None], matrix), axis = 1)
 	labels = [str(label) for label in labels]
 	labels = ['T/P'] + labels
-	colwidth = max([len(label) for label in labels]+ [10])
+	colwidth = max([len(label) for label in labels]+ [23])
 	print("".join(item.ljust(colwidth) for item in labels))
 	for row in matrix:
 		row = [str(item) for item in row]
 		print("".join(item.ljust(colwidth) for item in row))
-	print('True Positive Rate:')
 	labels[0] = 'Labels:'
-	tpr = [str(item) for item in tpr[0]]
+	tpr = [str(item) for item in tpr]
 	tpr = ['TPR:'] + tpr
+	accuracy = [str(item) for item in accuracy]
+	accuracy = ['ACC:'] + accuracy
 	print("".join(item.ljust(colwidth) for item in labels))
 	print("".join(item.ljust(colwidth) for item in tpr))
+	print("".join(item.ljust(colwidth) for item in accuracy))
 	return
 
 def confusion_matrix(actual, pred, option):
 	assert(len(actual) == len(pred))
 	labels = define_label(option)
+	print(labels)
 	matrix = np.zeros((len(labels),len(labels)), dtype=int)
-	for i in range(len(labels)):
-		for j in range(len(labels)):
-			for act_line, pred_line in zip(actual, pred):
-				if option == 3:
-					act_line[3], pred_line[3] = re_value(act_line[3], pred_line[3])
-				if act_line[option] == i and pred_line[option] == j:
-					matrix[i][j] = matrix[i][j] + 1
+	for act_line, pred_line in zip(actual, pred):
+		print('act_line:', act_line)
+		print('pred_line:', pred_line)
+		if option == 3:
+			act_line[3], pred_line[3] = re_value(int(act_line[3]), int(pred_line[3]))
+		i = labels.index(int(act_line[option]))
+		j = labels.index(int(pred_line[option]))
+		matrix[i][j] = matrix[i][j] + 1
 	#计算所需要的数值
-	tpr = np.zeros((1, len(labels)))
+	tpr = [0]*len(labels)
+	accuracy = [0]*len(labels)
+	total_sum = np.sum(matrix)
+	row_sum = np.sum(matrix, axis=1)
+	col_sum = np.sum(matrix, axis=0)
 	for i in range(len(labels)):
-		sum = np.sum(matrix[i])
-		if sum != 0:
-			tpr[0][i] = matrix[i][i]/sum
-		else:
-			tpr[0][i] = 404
-	return matrix, tpr, labels
+		TP = matrix[i][i]
+		FP = col_sum[i] - matrix[i][i]
+		TN = total_sum - col_sum[i] - row_sum[i] + matrix[i][i]
+		FN = row_sum[i] - matrix[i][i]
+		tpr[i] = accuracy[i] = 404
+		if TP + FN != 0:
+			tpr[i] =  TP / (TP + FN)
+		if TP + FN + FP + FN != 0:
+			accuracy[i] = (TP + TN) / (TP + TN + FP + FN)
+	return matrix, tpr, labels, accuracy
 
