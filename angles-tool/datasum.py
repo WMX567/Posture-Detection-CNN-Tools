@@ -38,8 +38,8 @@ def mapping(vision_filename):
 def count_postureCode(vision_filename):
     truth_filename = mapping(vision_filename)
     truth, vision = ([] for i in range(2))
-    reader_truth = csv.reader(open(os.path.join(truth_path, truth_filename + '.csv'), mode='r', encoding="utf-8-sig", errors="replace"))
-    reader_vision = csv.reader(open(os.path.join(vision_path, vision_filename + '.csv'), mode='r', encoding="utf-8-sig", errors="replace"))
+    reader_truth = csv.reader(open(os.path.join(truth_path, truth_filename + '.csv'), encoding="utf-8-sig", errors="replace"))
+    reader_vision = csv.reader(open(os.path.join(vision_path, vision_filename + '.csv'), encoding="utf-8-sig", errors="replace"))
     for rowT, rowV in zip(reader_truth, reader_vision):
         truth.append(rowT)
         vision.append(rowV)
