@@ -42,19 +42,40 @@ def print_confusion_matrix(matrix, labels, tpr, accuracy):
 	print("".join(item.ljust(colwidth) for item in accuracy))
 	return
 
-def confusion_matrix(actual, pred, option):
+#多维度list
+def adjust_value_ver1(actual, pred, option):
 	assert(len(actual) == len(pred))
 	labels = define_label(option)
-	print(labels)
 	matrix = np.zeros((len(labels),len(labels)), dtype=int)
 	for act_line, pred_line in zip(actual, pred):
-		print('act_line:', act_line)
-		print('pred_line:', pred_line)
 		if option == 3:
 			act_line[3], pred_line[3] = re_value(int(act_line[3]), int(pred_line[3]))
 		i = labels.index(int(act_line[option]))
 		j = labels.index(int(pred_line[option]))
 		matrix[i][j] = matrix[i][j] + 1
+	return matrix, labels
+
+#单维度list
+def adjust_value_ver2(actual, pred, option):
+	assert(len(actual) == len(pred))
+	labels = define_label(option)
+	matrix = np.zeros((len(labels),len(labels)), dtype=int)
+	for act_line, pred_line in zip(actual, pred):
+		if act_line != '' and pred_line != '':
+			if option == 1:
+				if act_line == '0':
+					act_line = '1'
+				elif option == 2:
+					if act_line == '1':
+						act_line = '0'
+				elif option == 3:
+					act_line, pred_line = re_value(int(act_line), int(pred_line))
+			i = labels.index(int(act_line))
+			j = labels.index(int(pred_line))
+			matrix[i][j] = matrix[i][j] + 1
+	return matrix, labels
+
+def confusion_matrix(matrix, labels):
 	#计算所需要的数值
 	tpr = [0]*len(labels)
 	accuracy = [0]*len(labels)
@@ -71,5 +92,7 @@ def confusion_matrix(actual, pred, option):
 			tpr[i] =  TP / (TP + FN)
 		if TP + FN + FP + FN != 0:
 			accuracy[i] = (TP + TN) / (TP + TN + FP + FN)
-	return matrix, tpr, labels, accuracy
+	return tpr, labels, accuracy
+
+
 

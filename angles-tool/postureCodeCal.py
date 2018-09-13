@@ -79,7 +79,8 @@ def neck_estimate(neck_angle):
 def proccess_one_image_2D_angle(x, y):
     posture_codes = []
     #计算向量
-    vec_back = [(x[12]+x[13]-x[3]-x[2])/2, (y[12]+y[13]-y[3]-y[2])/2, 0]
+    #vec_back = [(x[12]+x[13]-x[3]-x[2])/2, (y[12]+y[13]-y[3]-y[2])/2, 0]
+    vec_back = [x[12]-x[3], y[12]-y[3], 0]
     vec_head = [x[9]-x[8], y[9]-y[8], 0]
     vec_left_arm = [x[14]-x[13], y[14]-y[13], 0]
     vec_left_elbow = [x[15]-x[14], y[15]-y[14], 0]

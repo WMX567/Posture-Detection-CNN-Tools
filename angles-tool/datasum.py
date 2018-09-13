@@ -7,10 +7,10 @@
 import os,sys,csv
 import numpy as np
 from ReadModelOutput import modify_filename
-from confmatrix import confusion_matrix, print_confusion_matrix
+from confmatrix import adjust_value_ver1, confusion_matrix, print_confusion_matrix
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-vision_path = os.path.join(dir_path, 'PostureCodes')
+vision_path = os.path.join(dir_path, 'S2')
 truth_path = os.path.join(dir_path, 'Ground_Truth')
 output_path = os.path.join(dir_path, 'Confusion_Matrix')
 param_path = os.path.join(dir_path, 'truth_correspond.csv')
@@ -19,7 +19,6 @@ def mapping(vision_filename):
     video_ID = ''
     subject_ID = int(vision_filename[0:2])
     video_cut = vision_filename[-1]
-    #print('video:', video_cut)
     if len(vision_filename) > 10:
         video_cut = vision_filename[-3:]
     with open(param_path, encoding='utf-8', errors='replace') as csvfile:
@@ -35,11 +34,11 @@ def mapping(vision_filename):
     truth_filename = vision_filename[0:2] + '_' + pad_zero + video_ID + '_' + 'S' + video_cut
     return truth_filename
 
-def count_postureCode(vision_filename):
+def count_postureCode(vision_filename,vision_path):
     truth_filename = mapping(vision_filename)
     truth, vision = ([] for i in range(2))
-    reader_truth = csv.reader(open(os.path.join(truth_path, truth_filename + '.csv'), mode='r', encoding="utf-8-sig", errors="replace"))
-    reader_vision = csv.reader(open(os.path.join(vision_path, vision_filename + '.csv'), mode='r', encoding="utf-8-sig", errors="replace"))
+    reader_truth = csv.reader(open(os.path.join(truth_path, truth_filename + '.csv'), encoding="utf-8-sig", errors="replace"))
+    reader_vision = csv.reader(open(os.path.join(vision_path, vision_filename + '.csv'), encoding="utf-8-sig", errors="replace"))
     for rowT, rowV in zip(reader_truth, reader_vision):
         truth.append(rowT)
         vision.append(rowV)
@@ -70,7 +69,7 @@ if __name__ == "__main__":
             video_path = os.path.join(output_path, video_ID)
             if not os.path.exists(video_path):
                 os.makedirs(video_path)
-            truth, vision = count_postureCode(vision_filename)
+            truth, vision = count_postureCode(vision_filename, vision_path)
             read_length = int(len(vision)/6)
             if read_length > len(truth):
                 read_length = len(truth)
@@ -85,7 +84,8 @@ if __name__ == "__main__":
                 print_stdout = sys.stdout
                 out_file = open(os.path.join(new_path, options[i] + '_CM.txt'), 'w')
                 sys.stdout = out_file
-                con_matrix, tpr, labels, accuracy = confusion_matrix(truth, vision, i)
+                con_matrix, labels = adjust_value_ver1(truth, vision, i)
+                tpr, labels, accuracy = confusion_matrix(con_matrix, labels)
                 print_confusion_matrix(con_matrix, labels, tpr, accuracy)
                 if i == 2:
                     accuracy.remove(accuracy[1])
@@ -115,3 +115,9 @@ if __name__ == "__main__":
     with open(os.path.join(output_path, 'mean_tpr.csv'), 'w') as output:
         writer = csv.writer(output, lineterminator='\n')
         writer.writerow(mean_tpr)
+
+
+
+
+      
+      
