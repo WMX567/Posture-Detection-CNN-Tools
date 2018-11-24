@@ -7,7 +7,7 @@ wumengxi@umich.edu
 """
 import os, csv
 import numpy as np
-from ReadModelOuput import read_model_output
+from ReadModelOutput import read_model_output
 from Angle_3D_Cal import proccess_3D_angles
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
